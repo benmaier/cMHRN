@@ -60,7 +60,7 @@ vector < set < size_t > * > get_components(
         const vector < set < size_t > * > &G
         );
 
-vector < set < size_t > * > get_giant_component(
+void get_giant_component(
         vector < set < size_t > * > &G
         );
 

@@ -130,8 +130,8 @@ vector < set < size_t > * > get_components_from_edgelist(
     return get_components(G);
 }
 
-// returns neighbor sets
-vector < set < size_t > * > get_giant_component(
+// replace the graph in-place with the giant component
+void get_giant_component(
         vector < set < size_t > * > &G
         )
 {
@@ -145,24 +145,19 @@ vector < set < size_t > * > get_giant_component(
             max_comp = comp;
         }
 
-    vector < set < size_t > * > giant;
-
     for(size_t node = 0; node<G.size(); node++)
     {
         if ( components[max_comp]->find(node) == components[max_comp]->end() )
         {
-            // if current node not in giant component, push empty neighbor set
-            giant.push_back(new set <size_t>);
-        }
-        else
-        {
-            // if current node in giant component, push neighbor set from 
-            // original graph
-            giant.push_back(G[node]);
+            // if current node not in giant component, empty the neighbor set
+            G[node]->clear();
         }
     }
 
-    return giant;
+    //free memory
+    for(size_t comp = 0; comp<components.size(); comp++)
+        delete components[comp];
 }
+
 
 
