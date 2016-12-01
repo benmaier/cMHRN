@@ -20,6 +20,7 @@ ext_modules = [
         'cMHRN',
         [ 
             'cMHRN/Utilities.cpp', 
+            'cMHRN/mhrn.cpp', 
             'cMHRN/cMHRN.cpp', 
         ],
         include_dirs=[
