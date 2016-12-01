@@ -7,7 +7,7 @@
 
 using namespace std;
 
-tuple < size_t, < vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
+tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
         size_t B,
         size_t L,
         double k,

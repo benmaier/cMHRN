@@ -62,7 +62,7 @@ tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
     if ( use_giant_component && delete_non_giant_component_nodes )
     {
         vector < size_t > map_to_new_ids(N);
-        size_t current_id = 0
+        size_t current_id = 0;
         for(size_t u = 0; u < N; u++)
             if (G[u]->size()>0)
             {
