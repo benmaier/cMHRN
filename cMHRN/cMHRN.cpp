@@ -47,7 +47,7 @@ namespace py = pybind11;
 PYBIND11_PLUGIN(cMHRN) {
     py::module m("cMHRN", "Module to generate MHRN in a fast manner.");
     
-    m.def("fast_mhrn", &fast_mhrn_edge_list, "Returns MHRN as edge list.",
+    m.def("fast_mhrn", &fast_mhrn_edge_list, "Returns an MHRN as edge list.",
             py::arg("B"),
             py::arg("L"),
             py::arg("k"),
@@ -56,21 +56,27 @@ PYBIND11_PLUGIN(cMHRN) {
             py::arg("seed") = 0
             );
 
-    m.def("fast_mhrn_coord_lists", &fast_mhrn_coord_lists, "Returns MHRN as lists of adjacency matrix coordinates.",
+    m.def("fast_mhrn_coord_lists", &fast_mhrn_coord_lists, "Returns an MHRN as lists of adjacency matrix coordinates.",
             py::arg("B"),
             py::arg("L"),
             py::arg("k"),
             py::arg("xi"),
             py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
             py::arg("seed") = 0
             );
 
-    m.def("fast_gnp", &fast_gnp, "Returns a G(N,p) graph in O(N+m) time as described by Batagelj and Brandes (in edge list format).",
+    m.def("fast_gnp", &fast_gnp, "Returns a G(N,p) random graph in O(N+m) time as described by Batagelj and Brandes (in edge list format).",
             py::arg("N"),
             py::arg("p"),
             py::arg("start_node") = 0,
             py::arg("seed") = 0
-           )
+           );
+
+    m.def("get_components", &get_components_from_edgelist, "Get a list of sets. Each list entry is a set of nodes which make up one component of the graph.",
+            py::arg("N"),
+            py::arg("edge_list")
+          );
 
 
     /*

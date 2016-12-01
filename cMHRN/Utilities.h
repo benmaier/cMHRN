@@ -51,7 +51,7 @@ void add_random_subgraph(
 
 void add_nodes_belonging_to_this_component(
         size_t start_node,
-        vector < set < size_t > * > &G,
+        const vector < set < size_t > * > &G,
         set < size_t > * comp,
         vector < bool > &already_visited
        );
@@ -63,4 +63,10 @@ vector < set < size_t > * > get_components(
 vector < set < size_t > * > get_giant_component(
         vector < set < size_t > * > &G
         );
+
+vector < set < size_t > * > get_components_from_edgelist(
+        size_t N,
+        vector < pair < size_t,size_t > > &edge_list
+        );
+
 #endif
