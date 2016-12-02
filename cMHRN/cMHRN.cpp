@@ -53,6 +53,7 @@ PYBIND11_PLUGIN(cMHRN) {
             py::arg("k"),
             py::arg("xi"),
             py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
             py::arg("seed") = 0
             );
 

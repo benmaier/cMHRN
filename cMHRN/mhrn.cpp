@@ -58,7 +58,6 @@ tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
     vector < size_t > rows;
     vector < size_t > cols;
 
-
     if ( use_giant_component && delete_non_giant_component_nodes )
     {
         vector < size_t > map_to_new_ids(N);
@@ -94,8 +93,6 @@ tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
             delete G[u];
         }
     }
-
-
     
     return make_tuple(new_N,rows,cols);
 }
@@ -106,6 +103,7 @@ vector < pair < size_t, size_t > > fast_mhrn_edge_list(
         double k,
         double xi,
         bool use_giant_component,
+        bool delete_non_giant_component_nodes,
         size_t seed
         )
 {
@@ -113,16 +111,42 @@ vector < pair < size_t, size_t > > fast_mhrn_edge_list(
     vector < set < size_t > * > G = fast_mhrn_neighbor_set(B,L,k,xi,use_giant_component,seed);
     vector < pair < size_t, size_t > > edge_list;
 
-    for(size_t u = 0; u < N; u++)
+    if ( use_giant_component && delete_non_giant_component_nodes )
     {
-        for( auto const& v: *G[u] )
-        {
-            if (u<v)
+        vector < size_t > map_to_new_ids(N);
+        size_t current_id = 0;
+        for(size_t u = 0; u < N; u++)
+            if (G[u]->size()>0)
             {
-                edge_list.push_back( make_pair(u,v) );
+                map_to_new_ids[u] = current_id;
+                current_id++;
             }
+
+        for(size_t u = 0; u < N; u++)
+        {
+            for( auto const& v: *G[u] )
+            {
+                if (u<v)
+                {
+                    edge_list.push_back( make_pair( map_to_new_ids[u], map_to_new_ids[v] ) );
+                }
+            }
+            delete G[u];
         }
-        delete G[u];
+    }
+    else
+    {
+        for(size_t u = 0; u < N; u++)
+        {
+            for( auto const& v: *G[u] )
+            {
+                if (u<v)
+                {
+                    edge_list.push_back( make_pair(u,v) );
+                }
+            }
+            delete G[u];
+        }
     }
     
     return edge_list;

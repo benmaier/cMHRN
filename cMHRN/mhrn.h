@@ -23,6 +23,7 @@ vector < pair < size_t, size_t > > fast_mhrn_edge_list(
         double k,
         double xi,
         bool use_giant_component = false,
+        bool delete_non_giant_component_nodes = true,
         size_t seed = 0
         );
 
