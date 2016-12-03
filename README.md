@@ -35,4 +35,4 @@ Now, run
 
 ### Python
 
-    $ python sandbox/meanfieldtest.py
+    $ python sandbox/mhrn_test.py
