@@ -18,7 +18,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         throw length_error("Invalid number of input arguments. Has to be 12.");
     }
 
-    if (nlhs!=1)
+    if (nlhs!=2)
     {
         mexPrintf("Got %d output arguments. ", nrhs);
         throw length_error("Invalid number of output arguments. Has to be 1.");
@@ -33,11 +33,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     read_single_value(prhs[5],delete_non_giant_component_nodes);
     read_single_value(prhs[6],seed);
 
-    vector < pair < size_t, size_t > > edge_list = fast_mhrn_edge_list(B,L,k,xi,
-                                                                       use_giant_component,
-                                                                       delete_non_giant_component_nodes,
-                                                                       seed
-                                                                      );
+    pair < size_t, vector < pair < size_t, size_t > > > 
+         edge_list = fast_mhrn_edge_list(B,L,k,xi,
+                                         use_giant_component,
+                                         delete_non_giant_component_nodes,
+                                         seed
+                                        );
 
-    plhs[0] = cast_edgelist_to_matlab(edge_list.begin(), edge_list.end());
+    plhs[0] = edge_list.first;
+    plhs[1] = cast_edgelist_to_matlab(edge_list.second.begin(), edge_list.second.end());
 }

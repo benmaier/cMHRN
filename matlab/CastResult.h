@@ -60,8 +60,8 @@ mxArray * cast_edgelist_to_matlab( fwditer begin, fwditer end )
     size_t index = 0;
     while (current_pair != end) 
     {
-        r[index] = (double) (*current_pair).first;
-        r[index+len_container] = (double) (*current_pair).second;
+        r[index] = (double) (*current_pair).first + 1;
+        r[index+len_container] = (double) (*current_pair).second + 1;
 
         current_pair++;
         index++;

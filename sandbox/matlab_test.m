@@ -9,10 +9,10 @@ use_giant_component = false;
 delete_nodes_non_giant = false;
 random_seed = 3984576;
 
-edge_list = fast_mhrn(B,L,k,xi,use_giant_component,delete_nodes_non_giant,random_seed);
+N, edge_list = fast_mhrn(B,L,k,xi,use_giant_component,delete_nodes_non_giant,random_seed);
 
-rows = edge_list(:,1) + 1;
-cols = edge_list(:,2) + 1;
+rows = edge_list(:,1);
+cols = edge_list(:,2);
 
 G = graph(rows,cols);
 plot(G);

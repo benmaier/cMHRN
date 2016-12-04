@@ -97,7 +97,7 @@ tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
     return make_tuple(new_N,rows,cols);
 }
 
-vector < pair < size_t, size_t > > fast_mhrn_edge_list(
+pair < size_t, vector < pair < size_t, size_t > > > fast_mhrn_edge_list(
         size_t B,
         size_t L,
         double k,
@@ -108,6 +108,7 @@ vector < pair < size_t, size_t > > fast_mhrn_edge_list(
         )
 {
     size_t N = pow(B,L);
+    size_t new_N = N;
     vector < set < size_t > * > G = fast_mhrn_neighbor_set(B,L,k,xi,use_giant_component,seed);
     vector < pair < size_t, size_t > > edge_list;
 
@@ -122,13 +123,17 @@ vector < pair < size_t, size_t > > fast_mhrn_edge_list(
                 current_id++;
             }
 
+        new_N = current_id;
+
         for(size_t u = 0; u < N; u++)
         {
+            size_t u_ = map_to_new_ids[u];
             for( auto const& v: *G[u] )
             {
-                if (u<v)
+                size_t v_ = map_to_new_ids[v];
+                if (u_<v_)
                 {
-                    edge_list.push_back( make_pair( map_to_new_ids[u], map_to_new_ids[v] ) );
+                    edge_list.push_back( make_pair( u_, v_ ) );
                 }
             }
             delete G[u];
@@ -149,7 +154,7 @@ vector < pair < size_t, size_t > > fast_mhrn_edge_list(
         }
     }
     
-    return edge_list;
+    return make_pair(new_N,edge_list);
 }
 
 vector < set < size_t > * > fast_mhrn_neighbor_set(

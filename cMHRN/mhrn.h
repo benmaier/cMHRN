@@ -17,7 +17,7 @@ tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
         size_t seed = 0
         );
 
-vector < pair < size_t, size_t > > fast_mhrn_edge_list(
+pair < size_t, vector < pair < size_t, size_t > > > fast_mhrn_edge_list(
         size_t B,
         size_t L,
         double k,
