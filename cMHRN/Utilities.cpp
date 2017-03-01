@@ -188,8 +188,6 @@ vector < double > get_kleinberg_pmf(
         pmf[neigh] *= k/a0;
         pmf[N-2-neigh] = pmf[neigh];
 
-        cout << neigh+1 << " " << pmf[neigh] << endl;
-
         if (pmf[neigh]>=1.)
         {
             overflow_probability += pmf[neigh] - 1.0;

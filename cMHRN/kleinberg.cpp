@@ -188,7 +188,6 @@ vector < set < size_t > * > kleinberg_neighbor_set(
     double k_meas = 0.;
     for(int i=0; i<N-1; i++)
         k_meas += pmf[i];
-    cout << "k = " << k_meas << endl;
 
     //loop over pairs
     for (size_t u=0; u<N-1; u++)
