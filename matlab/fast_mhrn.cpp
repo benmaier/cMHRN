@@ -15,7 +15,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if (nrhs!=7)
     {
         mexPrintf("Got %d input arguments. ", nrhs);
-        throw length_error("Invalid number of input arguments. Has to be 12.");
+        throw length_error("Invalid number of input arguments. Has to be 7.");
     }
 
     if (nlhs!=2)
@@ -40,6 +40,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                          seed
                                         );
 
-    plhs[0] = edge_list.first;
+    plhs[0] = cast_single_value(edge_list.first);
     plhs[1] = cast_edgelist_to_matlab(edge_list.second.begin(), edge_list.second.end());
 }

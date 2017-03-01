@@ -71,6 +71,18 @@ mxArray * cast_edgelist_to_matlab( fwditer begin, fwditer end )
 }
 
 template < typename num >
+mxArray * cast_single_value( num &val )
+{
+    mxArray *result;
+    result = mxCreateDoubleMatrix(1,1,mxREAL);
+    double *r;
+    r = mxGetPr(result);
+    r[0] = (double) val;
+    return result;
+
+}
+
+template < typename num >
 void read_single_value(const mxArray *m_single, num &val)
 {
     double *value;
