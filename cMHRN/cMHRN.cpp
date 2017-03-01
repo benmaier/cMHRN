@@ -38,6 +38,7 @@
 #include <pybind11/stl.h>
 #include "Utilities.h"
 #include "mhrn.h"
+#include "kleinberg.h"
 //#include "ResultClasses.h"
 //#include "test.h"
 
@@ -67,6 +68,24 @@ PYBIND11_PLUGIN(cMHRN) {
             py::arg("seed") = 0
             );
 
+    m.def("kleinberg_network", &kleinberg_edge_list, "Returns a 1d Kleinberg network (with periodic boundary conditions) as edge list.",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("mu"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("seed") = 0
+            );
+
+    m.def("kleinberg_network_coord_lists", &kleinberg_coord_lists, "Returns a 1d Kleinberg network (with periodic boundary conditions) as lists of adjacency matrix coordinates.",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("mu"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("seed") = 0
+            );
+
     m.def("fast_gnp", &fast_gnp, "Returns a G(N,p) random graph in O(N+m) time as described by Batagelj and Brandes (in edge list format).",
             py::arg("N"),
             py::arg("p"),
@@ -78,6 +97,12 @@ PYBIND11_PLUGIN(cMHRN) {
             py::arg("N"),
             py::arg("edge_list")
           );
+
+    m.def("get_kleinberg_connection_probability", &get_kleinberg_pmf, "get a list of connection probabilities by neighbor distance",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("mu")
+        );
 
 
     /*

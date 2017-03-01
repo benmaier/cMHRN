@@ -3,10 +3,12 @@ mex -setup C++;
 
 % compile functions
 mex -v CXXFLAGS='-O3 -std=c++11 -stdlib=libc++ -I./cMHRN -I./matlab' matlab/fast_mhrn.cpp matlab/CastResult.cpp cMHRN/mhrn.cpp cMHRN/Utilities.cpp 
+mex -v CXXFLAGS='-O3 -std=c++11 -stdlib=libc++ -I./cMHRN -I./matlab' matlab/kleinberg_network.cpp matlab/CastResult.cpp cMHRN/kleinberg.cpp cMHRN/Utilities.cpp 
 
 % move compiled functions to new folder
 mkdir matlabbuild
 movefile('fast_mhrn*','./matlabbuild');
+movefile('kleinberg*','./matlabbuild');
 
 % add path to matlab environment via startup-file in user directory
 up = userpath;

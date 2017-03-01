@@ -37,6 +37,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <tuple>
+#include <thread>
 
 using namespace std;
 
@@ -69,4 +70,13 @@ vector < set < size_t > * > get_components_from_edgelist(
         vector < pair < size_t,size_t > > &edge_list
         );
 
+vector < double > get_kleinberg_pmf(
+        size_t N,
+        double k,
+        double mu
+        );
+
+void randomly_seed_engine(
+        default_random_engine &generator
+        );
 #endif

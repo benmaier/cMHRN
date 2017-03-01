@@ -24,7 +24,7 @@
  */
 
 #include "Utilities.h"
-#include "mhrn.h"
+#include "kleinberg.h"
 
 #include <iostream>
 #include <algorithm>
@@ -42,18 +42,16 @@
 
 using namespace std;
 
-tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
-        size_t B,
-        size_t L,
+tuple < size_t, vector <size_t>, vector<size_t> > kleinberg_coord_lists(
+        size_t N,
         double k,
-        double xi,
+        double mu,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
         size_t seed
         )
 {
-    vector < set < size_t > * > G = fast_mhrn_neighbor_set(B,L,k,xi,use_giant_component,seed);
-    size_t N = pow(B,L);
+    vector < set < size_t > * > G = kleinberg_neighbor_set(N,k,mu,use_giant_component,seed);
     size_t new_N = N;
     vector < size_t > rows;
     vector < size_t > cols;
@@ -97,19 +95,17 @@ tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
     return make_tuple(new_N,rows,cols);
 }
 
-pair < size_t, vector < pair < size_t, size_t > > > fast_mhrn_edge_list(
-        size_t B,
-        size_t L,
+pair < size_t, vector < pair < size_t, size_t > > > kleinberg_edge_list(
+        size_t N,
         double k,
-        double xi,
+        double mu,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
         size_t seed
         )
 {
-    size_t N = pow(B,L);
     size_t new_N = N;
-    vector < set < size_t > * > G = fast_mhrn_neighbor_set(B,L,k,xi,use_giant_component,seed);
+    vector < set < size_t > * > G = kleinberg_neighbor_set(N,k,mu,use_giant_component,seed);
     vector < pair < size_t, size_t > > edge_list;
 
     if ( use_giant_component && delete_non_giant_component_nodes )
@@ -157,20 +153,18 @@ pair < size_t, vector < pair < size_t, size_t > > > fast_mhrn_edge_list(
     return make_pair(new_N,edge_list);
 }
 
-vector < set < size_t > * > fast_mhrn_neighbor_set(
-        size_t B,
-        size_t L,
+vector < set < size_t > * > kleinberg_neighbor_set(
+        size_t N,
         double k,
-        double xi,
+        double mu,
         bool use_giant_component,
         size_t seed
         )
 {
 
-    assert(L>1);
     assert(k>0);
-    assert(B>1);
-    assert((xi>=0.0) && (xi<=B));
+    assert(N>1);
+    assert(mu<=1.);
 
     //initialize random generators
     default_random_engine generator;
@@ -181,66 +175,32 @@ vector < set < size_t > * > fast_mhrn_neighbor_set(
     uniform_real_distribution<double> uni_distribution(0.,1.);
     //binomial_distribution<int> distribution(9,0.5)
     
-    size_t N = pow(B,L);
-
     vector < set < size_t > * > G;
     for(size_t node=0; node<N; node++)
     {
         G.push_back( new set <size_t> );
     }
 
-    double p1;
-    if ( xi == 1.0 ) 
-        p1 = k / double(B-1) / double(L);
-    else
-        p1 = k / double(B-1) * (1.0-xi) / (1.0-pow(xi,L));
+    //get probability mass function for lattice distance
+    vector < double > pmf = get_kleinberg_pmf(N,k,mu);
 
-    if (p1>1.0)
-        throw domain_error("The lowest layer connection probability is >1.0, meaning that either xi is too small or k is too large.");
 
-    vector < double > p(L);
-    p[0] = p1;
-    for (size_t l=2; l<=L; l++)
-        p[l-1] = p1 * pow(xi/double(B),l-1);
+    double k_meas = 0.;
+    for(int i=0; i<N-1; i++)
+        k_meas += pmf[i];
+    cout << "k = " << k_meas << endl;
 
-    //add ER graphs in lowest layer l=1
-    for (size_t start_node = 0; start_node<N; start_node += B)
+    //loop over pairs
+    for (size_t u=0; u<N-1; u++)
     {
-        add_random_subgraph(B,p1,G,generator,uni_distribution,start_node);
-    }
-
-    for(size_t l=2;l<=L; l++)
-    {
-        binomial_distribution<size_t> binom( size_t(0.5*pow(B,(L+l-1))*(B-1)),p[l-1]);
-        size_t current_m_l = binom(generator);
-
-        for (size_t m = 0; m< current_m_l; m++)
+        for (size_t v=u+1; v<N; v++)
         {
-            size_t B_l = pow(B,l);
-            size_t B_lm1 = pow(B,l-1);
-            bool already_contains_edge = true;
-            
-            do
+            //assign edge according to probability given lattice distance of pair
+            if (uni_distribution(generator) < pmf[v-u-1])
             {
-                size_t w = size_t(uni_distribution(generator)*N);
-                size_t b = w / B_l;
-                size_t b_lower = w / B_lm1;
-                size_t v;
-                uniform_int_distribution<size_t> randint(b*B_l,(b+1)*B_l-1);
-
-                do
-                    v = randint(generator);
-                while (b_lower == v / B_lm1);
-
-                already_contains_edge = G[w]->find(v) != G[w]->end();
-
-                if ( not already_contains_edge)
-                {
-                    G[w]->insert(v);
-                    G[v]->insert(w);
-                }
-
-            } while ( already_contains_edge );
+                G[u]->insert(v);
+                G[v]->insert(u);
+            }
         }
     }
 
@@ -256,38 +216,3 @@ vector < set < size_t > * > fast_mhrn_neighbor_set(
 
 }
 
-vector < pair < size_t, size_t > > fast_gnp(
-        size_t N_,
-        double p,
-        size_t start_node,
-        size_t seed
-        )
-{
-    size_t N = N_ + start_node;
-
-    //initialize random generators
-    default_random_engine generator;
-    if (seed == 0)
-        randomly_seed_engine(generator);
-    else
-        generator.seed(seed);
-    uniform_real_distribution<double> uni_distribution(0.,1.);
-
-    vector < set < size_t > * > G;
-    for(size_t node=0; node<N; node++)
-        G.push_back( new set <size_t> );
-
-    add_random_subgraph(N,p,G,generator,uni_distribution,start_node);
-    vector < pair < size_t, size_t > > edge_list;
-
-    for(size_t u = 0; u < N; u++)
-        for( auto const& v: *G[u] )
-        {
-            if (u<v)
-            {
-                edge_list.push_back( make_pair(u,v) );
-            }
-        }
-    
-    return edge_list;
-}

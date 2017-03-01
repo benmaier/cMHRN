@@ -4,7 +4,7 @@ clean:
 
 clean_all:
 	make clean
-	make pyclean
+	sudo make pyclean
 	make matclean
 
 pyclean:
@@ -15,3 +15,6 @@ pyclean:
 
 matclean:
 	-rm -rf ./matlabbuild/
+
+py:
+	sudo python setup.py develop

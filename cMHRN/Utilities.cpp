@@ -25,7 +25,6 @@
 
 #include "Utilities.h"
 
-
 using namespace std;
 
 void add_random_subgraph(
@@ -160,4 +159,84 @@ void get_giant_component(
 }
 
 
+vector < double > get_kleinberg_pmf(
+        size_t N,
+        double k,
+        double mu
+        )
+{
 
+    size_t N_half = N / 2;
+    vector < double > pmf(N-1);
+    double a0 = 0.0;
+    double alpha = mu-1.;
+
+    for(size_t neigh = 0; neigh< N_half; neigh++)
+    {
+        pmf[neigh] = pow(neigh+1.0,alpha);
+        pmf[N-2-neigh] = pmf[neigh];
+        if (neigh == N-2-neigh)
+            a0 += pmf[neigh];
+        else
+            a0 += 2*pmf[neigh];
+    }
+
+    double overflow_probability = 0.0;
+
+    for(size_t neigh = 0; neigh< N_half; neigh++)
+    {
+        pmf[neigh] *= k/a0;
+        pmf[N-2-neigh] = pmf[neigh];
+
+        cout << neigh+1 << " " << pmf[neigh] << endl;
+
+        if (pmf[neigh]>=1.)
+        {
+            overflow_probability += pmf[neigh] - 1.0;
+            pmf[neigh] = 1.0;
+            pmf[N-2-neigh] = 1.0;
+        }
+        else if (overflow_probability>0.)
+        {
+            double dp = 1.0 - pmf[neigh];
+            if (dp>overflow_probability)
+            {
+                pmf[neigh] += overflow_probability;
+                if (neigh != N-2-neigh)
+                    pmf[N-2-neigh] += overflow_probability;
+                else if (1.0 - pmf[N-2-neigh] > overflow_probability)
+                    pmf[N-2-neigh] += overflow_probability;
+                else
+                    pmf[N-2-neigh] = 1.0;
+
+                overflow_probability = 0.0;
+            }
+            else
+            {
+                pmf[neigh] = 1.0;
+                pmf[N-2-neigh] = 1.0;
+                overflow_probability -= dp;
+            }
+        }
+        a0_test += pmf[neigh];
+        if (neigh != N-2-neigh)
+            a0_test += pmf[neigh];
+
+    }
+
+    return pmf;
+}
+
+void randomly_seed_engine(
+        default_random_engine &generator
+        )
+//taken from http://stackoverflow.com/a/29190957/4177832
+{
+    const auto time_seed = static_cast<size_t>(time(0));
+    const auto clock_seed = static_cast<size_t>(clock());
+    const size_t pid_seed =
+              hash<thread::id>()(this_thread::get_id());
+
+    seed_seq seed_value { time_seed, clock_seed, pid_seed };
+    generator.seed(seed_value);
+}

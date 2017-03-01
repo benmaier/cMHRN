@@ -21,6 +21,7 @@ ext_modules = [
         [ 
             'cMHRN/Utilities.cpp', 
             'cMHRN/mhrn.cpp', 
+            'cMHRN/kleinberg.cpp', 
             'cMHRN/cMHRN.cpp', 
         ],
         include_dirs=[
@@ -81,7 +82,7 @@ class BuildExt(build_ext):
 
 setup(
     name='cMHRN',
-    version='0.0.3',
+    version='0.0.4',
     author='Benjamin F. Maier',
     author_email='bfmaier@physik.hu-berlin.de',
     url='https://github.com/benmaier/cMHRN',
