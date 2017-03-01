@@ -216,10 +216,6 @@ vector < double > get_kleinberg_pmf(
                 overflow_probability -= dp;
             }
         }
-        a0_test += pmf[neigh];
-        if (neigh != N-2-neigh)
-            a0_test += pmf[neigh];
-
     }
 
     return pmf;
