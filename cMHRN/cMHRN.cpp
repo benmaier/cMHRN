@@ -39,14 +39,15 @@
 #include "Utilities.h"
 #include "mhrn.h"
 #include "kleinberg.h"
+#include "small_world.h"
 //#include "ResultClasses.h"
 //#include "test.h"
 
 using namespace std;
 namespace py = pybind11;
 
-PYBIND11_PLUGIN(cMHRN) {
-    py::module m("cMHRN", "Module to generate MHRN in a fast manner.");
+PYBIND11_MODULE(cMHRN, m) {
+    m.doc() = "Module to generate MHRN, Kleinberg networks and small world networks in a fast manner.";
     
     m.def("fast_mhrn", &fast_mhrn_edge_list, "Returns an MHRN as edge list.",
             py::arg("B"),
@@ -86,6 +87,24 @@ PYBIND11_PLUGIN(cMHRN) {
             py::arg("seed") = 0
             );
 
+    m.def("small_world_network", &small_world_edge_list, "Returns a Watts-Strogatz small world network as a pair of (number_of_nodes, edge_list). The degree k has to be an even integer.",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("p"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("seed") = 0
+            );
+
+    m.def("small_world_network_coord_lists", &small_world_coord_lists, "Returns a Watts-Strogatz small world network as lists of adjacency matrix coordinates. The degree k has to be an even integer",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("p"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("seed") = 0
+            );
+
     m.def("fast_gnp", &fast_gnp, "Returns a G(N,p) random graph in O(N+m) time as described by Batagelj and Brandes (in edge list format).",
             py::arg("N"),
             py::arg("p"),
@@ -103,32 +122,5 @@ PYBIND11_PLUGIN(cMHRN) {
             py::arg("k"),
             py::arg("mu")
         );
-
-
-    /*
-    py::class_<SIR_result>(m,"SIR_result")
-        .def(py::init<>())
-        .def_readwrite("I_of_t", &SIR_result::I_of_t)
-        .def_readwrite("R_of_t", &SIR_result::R_of_t)
-        .def_readwrite("SI_of_t", &SIR_result::SI_of_t)
-        .def_readwrite("R0_of_t", &SIR_result::R0_of_t)
-        .def_readwrite("edge_list", &SIR_result::edge_list);
-
-    py::class_<SIS_result>(m,"SIS_result")
-        .def(py::init<>())
-        .def_readwrite("I_of_t", &SIS_result::I_of_t)
-        .def_readwrite("SI_of_t", &SIS_result::SI_of_t)
-        .def_readwrite("R0_of_t", &SIS_result::R0_of_t)
-        .def_readwrite("edge_list", &SIS_result::edge_list);
-
-    py::class_<edge_changes>(m,"edge_changes")
-        .def(py::init<>())
-        .def_readwrite("t", &edge_changes::t)
-        .def_readwrite("edges_out", &edge_changes::edges_out)
-        .def_readwrite("edges_in", &edge_changes::edges_in);
-       */
-
-
-    return m.ptr();
 
 }
