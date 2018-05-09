@@ -4,16 +4,21 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import setuptools
 import os, sys
-from pip import locations
+
+__version__ = '0.1'
 
 class get_pybind_include(object):
+    """Helper class to determine the pybind11 include path
+    The purpose of this class is to postpone importing pybind11
+    until it is actually installed, so that the ``get_include()``
+    method can be invoked. """
 
-    def __init__(self,user=False):
+    def __init__(self, user=False):
         self.user = user
 
     def __str__(self):
-        pybind_include = os.path.dirname(locations.distutils_scheme('pybind11',self.user)['headers'])
-        return pybind_include
+        import pybind11
+        return pybind11.get_include(self.user)
 
 ext_modules = [
     Extension(
@@ -22,6 +27,7 @@ ext_modules = [
             'cMHRN/Utilities.cpp', 
             'cMHRN/mhrn.cpp', 
             'cMHRN/kleinberg.cpp', 
+            'cMHRN/small_world.cpp', 
             'cMHRN/cMHRN.cpp', 
         ],
         include_dirs=[
@@ -82,12 +88,12 @@ class BuildExt(build_ext):
 
 setup(
     name='cMHRN',
-    version='0.0.4',
+    version=__version__,
     author='Benjamin F. Maier',
     author_email='bfmaier@physik.hu-berlin.de',
     url='https://github.com/benmaier/cMHRN',
     license='BSD',
-    description='Creates moldular hierarichical random networks in a fast manner.',
+    description='Creates modular hierarichical random networks, Kleinberg networks and small world networks in a fast manner.',
     long_description='',
     ext_modules=ext_modules,
     install_requires=['pybind11'],

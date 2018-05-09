@@ -1,11 +1,13 @@
+default: 
+	make python
+
 clean:
 	-rm -f *.o
-	-rm -f $(TARGET)
+	make pyclean
 
 clean_all:
 	make clean
-	sudo make pyclean
-	make matclean
+	make pyclean
 
 pyclean:
 	-rm -f *.so
@@ -13,8 +15,14 @@ pyclean:
 	-rm -rf ./tmp/
 	-rm -rf ./build/
 
-matclean:
-	-rm -rf ./matlabbuild/
+python:
+	pip install -e ../cMHRN --no-binary :all:
 
-py:
-	sudo python setup.py develop
+grootinstall:
+	/usr/local/bin/pip2.7 install --user ../cMHRN
+
+groot:
+	git fetch
+	git pull
+	make clean
+	make grootinstall
