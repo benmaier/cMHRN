@@ -27,7 +27,8 @@ ext_modules = [
             'cMHRN/Utilities.cpp', 
             'cMHRN/mhrn.cpp', 
             'cMHRN/kleinberg.cpp', 
-            'cMHRN/small_world.cpp', 
+            'cMHRN/original_small_world.cpp', 
+            'cMHRN/modified_small_world.cpp', 
             'cMHRN/cMHRN.cpp', 
         ],
         include_dirs=[

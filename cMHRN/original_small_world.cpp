@@ -24,7 +24,7 @@
  */
 
 #include "Utilities.h"
-#include "small_world.h"
+#include "original_small_world.h"
 
 #include <iostream>
 #include <algorithm>
@@ -42,7 +42,7 @@
 
 using namespace std;
 
-tuple < size_t, vector <size_t>, vector<size_t> > small_world_coord_lists(
+tuple < size_t, vector <size_t>, vector<size_t> > original_small_world_coord_lists(
         size_t N,
         double k,
         double p,
@@ -51,7 +51,7 @@ tuple < size_t, vector <size_t>, vector<size_t> > small_world_coord_lists(
         size_t seed
         )
 {
-    vector < set < size_t > * > G = small_world_neighbor_set(N,k,p,use_giant_component,seed);
+    vector < set < size_t > * > G = original_small_world_neighbor_set(N,k,p,use_giant_component,seed);
     size_t new_N = N;
     vector < size_t > rows;
     vector < size_t > cols;
@@ -95,7 +95,7 @@ tuple < size_t, vector <size_t>, vector<size_t> > small_world_coord_lists(
     return make_tuple(new_N,rows,cols);
 }
     
-pair < size_t, vector < pair < size_t, size_t > > > small_world_edge_list(
+pair < size_t, vector < pair < size_t, size_t > > > original_small_world_edge_list(
         size_t N,
         size_t k,
         double p,
@@ -105,7 +105,7 @@ pair < size_t, vector < pair < size_t, size_t > > > small_world_edge_list(
         )
 {
     size_t new_N = N;
-    vector < set < size_t > * > G = small_world_neighbor_set(N,k,p,use_giant_component,seed);
+    vector < set < size_t > * > G = original_small_world_neighbor_set(N,k,p,use_giant_component,seed);
     vector < pair < size_t, size_t > > edge_list;
 
     if ( use_giant_component && delete_non_giant_component_nodes )
@@ -153,7 +153,7 @@ pair < size_t, vector < pair < size_t, size_t > > > small_world_edge_list(
     return make_pair(new_N,edge_list);
 }
 
-vector < set < size_t > * > small_world_neighbor_set(
+vector < set < size_t > * > original_small_world_neighbor_set(
         size_t N,
         size_t k,
         double p,
@@ -204,12 +204,14 @@ vector < set < size_t > * > small_world_neighbor_set(
         for (size_t neighbor = node+1; neighbor <= node+max_neighbor; ++neighbor)
         {
             size_t target = neighbor % N;
-            size_t base;
+            size_t base = node;
 
+            /*
             if (random_number(generator) < 0.5)
                 base = node;
             else
                 base = target;
+            */
 
             if (random_number(generator) < p)
             {

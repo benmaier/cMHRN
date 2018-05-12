@@ -39,7 +39,8 @@
 #include "Utilities.h"
 #include "mhrn.h"
 #include "kleinberg.h"
-#include "small_world.h"
+#include "modified_small_world.h"
+#include "original_small_world.h"
 //#include "ResultClasses.h"
 //#include "test.h"
 
@@ -87,7 +88,7 @@ PYBIND11_MODULE(cMHRN, m) {
             py::arg("seed") = 0
             );
 
-    m.def("small_world_network", &small_world_edge_list, "Returns a Watts-Strogatz small world network as a pair of (number_of_nodes, edge_list). The degree k has to be an even integer.",
+    m.def("original_small_world_network", &original_small_world_edge_list, "Returns a Watts-Strogatz small world network as a pair of (number_of_nodes, edge_list). Note that at p = 1, the generated networks are not equal to Erdos-Renyi graphs. The degree k has to be an even integer.",
             py::arg("N"),
             py::arg("k"),
             py::arg("p"),
@@ -96,7 +97,25 @@ PYBIND11_MODULE(cMHRN, m) {
             py::arg("seed") = 0
             );
 
-    m.def("small_world_network_coord_lists", &small_world_coord_lists, "Returns a Watts-Strogatz small world network as lists of adjacency matrix coordinates. The degree k has to be an even integer",
+    m.def("original_small_world_network_coord_lists", &original_small_world_coord_lists, "Returns a Watts-Strogatz small world network as lists of adjacency matrix coordinates. Note that at p = 1, the generated networks are not equal to Erdos-Renyi graphs. The degree k has to be an even integer",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("p"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("seed") = 0
+            );
+
+    m.def("modified_small_world_network", &modified_small_world_edge_list, "Returns a variant of the Watts-Strogatz small world network model as a pair of (number_of_nodes, edge_list). In this variant, at p = 1, the generated networks are equal to Erdos-Renyi graphs. The degree k has to be an even integer.",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("p"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("seed") = 0
+            );
+
+    m.def("modified_small_world_network_coord_lists", &modified_small_world_coord_lists, "Returns a variant of the Watts-Strogatz small world network model as lists of adjacency matrix coordinates. In this variant, at p = 1, the generated networks are equal to Erdos-Renyi graphs. The degree k has to be an even integer",
             py::arg("N"),
             py::arg("k"),
             py::arg("p"),

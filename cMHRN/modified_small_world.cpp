@@ -24,7 +24,7 @@
  */
 
 #include "Utilities.h"
-#include "kleinberg.h"
+#include "modified_small_world.h"
 
 #include <iostream>
 #include <algorithm>
@@ -42,16 +42,16 @@
 
 using namespace std;
 
-tuple < size_t, vector <size_t>, vector<size_t> > kleinberg_coord_lists(
+tuple < size_t, vector <size_t>, vector<size_t> > modified_small_world_coord_lists(
         size_t N,
         double k,
-        double mu,
+        double p,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
         size_t seed
         )
 {
-    vector < set < size_t > * > G = kleinberg_neighbor_set(N,k,mu,use_giant_component,seed);
+    vector < set < size_t > * > G = modified_small_world_neighbor_set(N,k,p,use_giant_component,seed);
     size_t new_N = N;
     vector < size_t > rows;
     vector < size_t > cols;
@@ -91,23 +91,21 @@ tuple < size_t, vector <size_t>, vector<size_t> > kleinberg_coord_lists(
             delete G[u];
         }
     }
-
-    //cout << new_N << " " << rows.size() << " " << cols.size() << endl;
     
     return make_tuple(new_N,rows,cols);
 }
-
-pair < size_t, vector < pair < size_t, size_t > > > kleinberg_edge_list(
+    
+pair < size_t, vector < pair < size_t, size_t > > > modified_small_world_edge_list(
         size_t N,
-        double k,
-        double mu,
+        size_t k,
+        double p,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
         size_t seed
         )
 {
     size_t new_N = N;
-    vector < set < size_t > * > G = kleinberg_neighbor_set(N,k,mu,use_giant_component,seed);
+    vector < set < size_t > * > G = modified_small_world_neighbor_set(N,k,p,use_giant_component,seed);
     vector < pair < size_t, size_t > > edge_list;
 
     if ( use_giant_component && delete_non_giant_component_nodes )
@@ -155,10 +153,10 @@ pair < size_t, vector < pair < size_t, size_t > > > kleinberg_edge_list(
     return make_pair(new_N,edge_list);
 }
 
-vector < set < size_t > * > kleinberg_neighbor_set(
+vector < set < size_t > * > modified_small_world_neighbor_set(
         size_t N,
-        double k,
-        double mu,
+        size_t k,
+        double p,
         bool use_giant_component,
         size_t seed
         )
@@ -166,7 +164,17 @@ vector < set < size_t > * > kleinberg_neighbor_set(
 
     assert(k>0);
     assert(N>1);
-    assert(mu<=1.);
+    assert(p <= 1.);
+    assert(p >= 0.);
+    assert(k % 2 == 0);
+    assert(k < N);
+
+    double _k = (double) k;
+
+    double p0 = _k / (_k - p*_k + p*(N-1.0));
+    double p1 = p0 * p;
+
+    size_t max_neighbor = k / 2;
 
     //initialize random generators
     default_random_engine generator;
@@ -174,33 +182,30 @@ vector < set < size_t > * > kleinberg_neighbor_set(
         randomly_seed_engine(generator);
     else
         generator.seed(seed);
-    uniform_real_distribution<double> uni_distribution(0.,1.);
-    //binomial_distribution<int> distribution(9,0.5)
+   
+    uniform_real_distribution<double> random_number(0., 1.);
+    uniform_int_distribution<size_t> random_node(0, N-1);
     
     vector < set < size_t > * > G;
-    for(size_t node=0; node<N; node++)
+    for (size_t node = 0; node < N; ++node)
+        G.push_back( new set < size_t >() );
+
+    // loop over all pairs and draw according to the right probability
+    // (this is a lazy slow algorithm running in O(N^2) time
+    for (size_t i = 0; i < N-1; ++i)
     {
-        G.push_back( new set <size_t> );
-    }
-
-    //get probability mass function for lattice distance
-    vector < double > pmf = get_kleinberg_pmf(N,k,mu);
-
-
-    double k_meas = 0.;
-    for(int i=0; i<N-1; i++)
-        k_meas += pmf[i];
-
-    //loop over pairs
-    for (size_t u=0; u<N-1; u++)
-    {
-        for (size_t v=u+1; v<N; v++)
+        for (size_t j = i+1; j < N; ++j)
         {
-            //assign edge according to probability given lattice distance of pair
-            if (uni_distribution(generator) < pmf[v-u-1])
+            size_t distance = j - i;
+            double probability = p1;
+
+            if (distance <= max_neighbor or (N - distance) <= max_neighbor)
+                probability = p0;
+
+            if (random_number(generator) < probability)
             {
-                G[u]->insert(v);
-                G[v]->insert(u);
+                G[i]->insert(j);
+                G[j]->insert(i);
             }
         }
     }
