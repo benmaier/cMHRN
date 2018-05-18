@@ -19,6 +19,7 @@ python:
 	pip install -e ../cMHRN --no-binary :all:
 
 grootinstall:
+	source /home/bfmaier/.bash_profile
 	/opt/python36/bin/pip3.6 install --user ../cMHRN
 
 groot:
