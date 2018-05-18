@@ -19,7 +19,7 @@ python:
 	pip install -e ../cMHRN --no-binary :all:
 
 grootinstall:
-	/usr/local/bin/pip2.7 install --user ../cMHRN
+	/opt/python36/bin/pip3.6 install --user ../cMHRN
 
 groot:
 	git fetch
