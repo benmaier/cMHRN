@@ -206,13 +206,6 @@ vector < set < size_t > * > original_small_world_neighbor_set(
             size_t target = neighbor % N;
             size_t base = node;
 
-            /*
-            if (random_number(generator) < 0.5)
-                base = node;
-            else
-                base = target;
-            */
-
             if (random_number(generator) < p)
             {
                 size_t new_neigh;
@@ -223,10 +216,9 @@ vector < set < size_t > * > original_small_world_neighbor_set(
                           (G[base]->find(new_neigh) != G[base]->end())
                         );
 
-                G[node]->erase(target);
-                G[target]->erase(node);
+                G[base]->erase(target);
+                G[target]->erase(base);
 
-                // choose original node as base node
                 G[base]->insert(new_neigh);
                 G[new_neigh]->insert(base);
             }
