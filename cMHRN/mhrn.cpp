@@ -39,8 +39,37 @@
 #include <ctime>
 #include <tuple>
 #include <assert.h>
+#include <sstream>
 
 using namespace std;
+
+double f(const size_t &B, const size_t &L, const double &k, double xi)
+{
+    return (B-1.0) * (1.0-pow(xi,L)) - k * (1.0-xi);
+}
+
+double fP(const size_t &B, const size_t &L, const double &k, double xi)
+{
+    return - (B-1.0) * (double(L) * pow(xi,L-1.0)) + k;
+}
+
+double find_xi_min(const size_t &B, const size_t &L, const double &k)
+{
+    double x1 = 0.1;
+    double x, fx, fx1;
+
+    double eps = 1e-14;
+    do
+    {
+        x = x1;
+        fx = f(B,L,k,x);
+        fx1 = fP(B,L,k,x);
+        x1 = x - (fx/fx1);
+
+    } while(fabs(x1-x) >= eps);
+
+    return x1;
+}
 
 tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
         size_t B,
@@ -196,7 +225,28 @@ vector < set < size_t > * > fast_mhrn_neighbor_set(
         p1 = k / double(B-1) * (1.0-xi) / (1.0-pow(xi,L));
 
     if (p1>1.0)
-        throw domain_error("The lowest layer connection probability is >1.0, meaning that either xi is too small or k is too large.");
+    {
+        stringstream ss; 
+        ss.precision(4);
+        ss << "The lowest layer connection probability is >1.0. If you want to keep xi = ";
+        ss << xi;
+
+        double new_k, new_xi;
+
+        if (xi == 1.0)
+            new_k = (B-1)*L;
+        else
+            new_k = (B-1) * (1-pow(xi,L)) / (1-xi);
+
+        new_xi = find_xi_min(B,L,k);
+
+        ss << " change the mean degree to k <= ";
+        ss << new_k;
+
+        ss << "; If you want to keep k = " << k << " change the structural control parameter to xi > " << new_xi;
+            
+        throw domain_error(ss.str());
+    }
 
     vector < double > p(L);
     p[0] = p1;

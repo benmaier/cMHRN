@@ -7,6 +7,12 @@
 
 using namespace std;
 
+double f(const size_t &B, const size_t &L, const double &k, double xi);
+
+double fP(const size_t &B, const size_t &L, const double &k, double xi);
+
+double find_xi_min(const size_t &B, const size_t &L, const double &k);
+
 tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
         size_t B,
         size_t L,
