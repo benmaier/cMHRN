@@ -5,7 +5,7 @@ from setuptools.command.build_ext import build_ext
 import setuptools
 import os, sys
 
-__version__ = '0.1'
+__version__ = '0.1.1'
 
 class get_pybind_include(object):
     """Helper class to determine the pybind11 include path

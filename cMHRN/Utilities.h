@@ -38,6 +38,7 @@
 #include <cstdlib>
 #include <tuple>
 #include <thread>
+#include <iso646.h>
 
 using namespace std;
 
