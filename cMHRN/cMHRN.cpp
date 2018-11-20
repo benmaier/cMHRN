@@ -112,6 +112,7 @@ PYBIND11_MODULE(cMHRN, m) {
             py::arg("p"),
             py::arg("use_giant_component") = false,
             py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("use_fast_algorithm") = true,
             py::arg("seed") = 0
             );
 
@@ -121,6 +122,7 @@ PYBIND11_MODULE(cMHRN, m) {
             py::arg("p"),
             py::arg("use_giant_component") = false,
             py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("use_fast_algorithm") = true,
             py::arg("seed") = 0
             );
 

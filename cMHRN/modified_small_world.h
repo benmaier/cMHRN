@@ -13,7 +13,8 @@ pair < size_t, vector < pair < size_t, size_t > > > modified_small_world_edge_li
         double p,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
-        size_t seed
+        bool use_fast_algorithm = true,
+        size_t seed = 0
         );
 
 vector < set < size_t > * > modified_small_world_neighbor_set(
@@ -21,7 +22,7 @@ vector < set < size_t > * > modified_small_world_neighbor_set(
         size_t k,
         double p,
         bool use_giant_component,
-        size_t seed
+        size_t seed = 0
         );
 
 tuple < size_t, vector <size_t>, vector<size_t> > modified_small_world_coord_lists(
@@ -30,6 +31,15 @@ tuple < size_t, vector <size_t>, vector<size_t> > modified_small_world_coord_lis
         double p,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
-        size_t seed
+        bool use_fast_algorithm = true,
+        size_t seed = 0
+        );
+
+vector < set < size_t > * > fast_modified_small_world_neighbor_set(
+        size_t N,
+        size_t k,
+        double p,
+        bool use_giant_component,
+        size_t seed = 0
         );
 #endif
