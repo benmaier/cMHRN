@@ -100,7 +100,7 @@ tuple < size_t, vector <size_t>, vector<size_t> > random_geometric_small_world_c
     
 pair < size_t, vector < pair < size_t, size_t > > > random_geometric_small_world_edge_list(
         size_t N,
-        size_t k,
+        double k,
         double p,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
@@ -162,7 +162,7 @@ pair < size_t, vector < pair < size_t, size_t > > > random_geometric_small_world
 
 vector < set < size_t > * > random_geometric_small_world_neighbor_set(
         size_t N,
-        size_t k,
+        double k,
         double p,
         bool use_giant_component,
         size_t seed
@@ -175,12 +175,10 @@ vector < set < size_t > * > random_geometric_small_world_neighbor_set(
     assert(p >= 0.);
     assert(k < N);
 
-    double _k = (double) k;
-
-    double p0 = _k / (_k - p*_k + p*(N-1.0));
+    double p0 = k / (k - p*k + p*(N-1.0));
     double p1 = p0 * p;
 
-    double max_neighbor = 0.5*k;
+    double radius = 0.5*k*double(N)/(N-1.0);
 
     //initialize random generators
     default_random_engine generator;
@@ -197,20 +195,24 @@ vector < set < size_t > * > random_geometric_small_world_neighbor_set(
     for (size_t node = 0; node < N; ++node)
     {
         G.push_back( new set < size_t >() );
-        r.push_back( random_number(generator)*(N-1.0) );
+        r.push_back( random_number(generator)*double(N) );
     }
 
     // loop over all pairs and draw according to the right probability
     // (this is a lazy slow algorithm running in O(N^2) time
+    size_t SR_edges = 0;
     for (size_t i = 0; i < N-1; ++i)
     {
         for (size_t j = i+1; j < N; ++j)
         {
-            size_t distance = abs(r[j] - r[i]);
+            double distance = fabs(r[j] - r[i]);
             double probability = p1;
 
-            if ((distance <= max_neighbor) or ((N - distance) <= max_neighbor))
+            if ((distance <= radius) or ((double(N) - distance) <= radius))
+            {
                 probability = p0;
+                SR_edges++;
+            }
 
             if (random_number(generator) < probability)
             {

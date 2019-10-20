@@ -9,7 +9,7 @@ using namespace std;
 
 pair < size_t, vector < pair < size_t, size_t > > > random_geometric_small_world_edge_list(
         size_t N,
-        size_t k,
+        double k,
         double p,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
@@ -18,7 +18,7 @@ pair < size_t, vector < pair < size_t, size_t > > > random_geometric_small_world
 
 vector < set < size_t > * > random_geometric_small_world_neighbor_set(
         size_t N,
-        size_t k,
+        double k,
         double p,
         bool use_giant_component,
         size_t seed = 0
