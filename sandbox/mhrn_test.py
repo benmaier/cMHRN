@@ -19,10 +19,10 @@ t_nx, t_c = 0.0, 0.0
 
 seed = 1
 
-print "measuring only creation"
+print("measuring only creation")
 
 bar = progressbar.ProgressBar()
-for meas in bar(xrange(N_meas)):
+for meas in bar(range(N_meas)):
     seed += 1
     tic = time.time()
     G1 = mhrn.fast_mhr_graph(B,L,k,xi)
@@ -36,18 +36,18 @@ for meas in bar(xrange(N_meas)):
     t_c += (toc-tic) / N_meas
     k_c += len(G2)*2./B**L / N_meas
 
-print "python: k = %4.2f, t = %fs" % (k_nx,t_nx)
-print "c++   : k = %4.2f, t = %fs" % (k_c,t_c)
-print 
+print("python: k = %4.2f, t = %fs" % (k_nx,t_nx))
+print("c++   : k = %4.2f, t = %fs" % (k_c,t_c))
+print() 
 
-print "measuring with extraction of giant component"
+print("measuring with extraction of giant component")
 
 k_nx, k_c = 0.0, 0.0
 t_nx, t_c = 0.0, 0.0
 
 
 bar = progressbar.ProgressBar()
-for meas in bar(xrange(N_meas)):
+for meas in bar(range(N_meas)):
     seed += 1
     tic = time.time()
     G1 = mhrn.fast_mhr_graph(B,L,k,xi)
@@ -71,5 +71,5 @@ for meas in bar(xrange(N_meas)):
     t_c += (toc-tic) / N_meas
     k_c += current_k / N_new / N_meas
 
-print "python: k = %4.2f, t = %fs" % (k_nx,t_nx)
-print "c++   : k = %4.2f, t = %fs" % (k_c,t_c)
+print("python: k = %4.2f, t = %fs" % (k_nx,t_nx))
+print("c++   : k = %4.2f, t = %fs" % (k_c,t_c))

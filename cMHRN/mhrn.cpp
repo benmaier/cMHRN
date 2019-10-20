@@ -78,10 +78,14 @@ tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
         double xi,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
+        bool allow_probability_redistribution,
         size_t seed
         )
 {
-    vector < set < size_t > * > G = fast_mhrn_neighbor_set(B,L,k,xi,use_giant_component,seed);
+    vector < set < size_t > * > G = fast_mhrn_neighbor_set(B,L,k,xi,
+                                                           use_giant_component,
+                                                           allow_probability_redistribution,
+                                                           seed);
     size_t N = pow(B,L);
     size_t new_N = N;
     vector < size_t > rows;
@@ -133,12 +137,16 @@ pair < size_t, vector < pair < size_t, size_t > > > fast_mhrn_edge_list(
         double xi,
         bool use_giant_component,
         bool delete_non_giant_component_nodes,
+        bool allow_probability_redistribution,
         size_t seed
         )
 {
     size_t N = pow(B,L);
     size_t new_N = N;
-    vector < set < size_t > * > G = fast_mhrn_neighbor_set(B,L,k,xi,use_giant_component,seed);
+    vector < set < size_t > * > G = fast_mhrn_neighbor_set(B,L,k,xi,
+                                                           use_giant_component,
+                                                           allow_probability_redistribution,
+                                                           seed);
     vector < pair < size_t, size_t > > edge_list;
 
     if ( use_giant_component && delete_non_giant_component_nodes )
@@ -192,12 +200,14 @@ vector < set < size_t > * > fast_mhrn_neighbor_set(
         double k,
         double xi,
         bool use_giant_component,
+        bool allow_probability_redistribution,
         size_t seed
         )
 {
 
     assert(L>1);
     assert(k>0);
+    assert(k<=pow(B,L)-1);
     assert(B>1);
     assert((xi>=0.0) && (xi<=B));
 
@@ -224,7 +234,12 @@ vector < set < size_t > * > fast_mhrn_neighbor_set(
     else
         p1 = k / double(B-1) * (1.0-xi) / (1.0-pow(xi,L));
 
-    if (p1>1.0)
+    vector < double > p(L);
+    p[0] = p1;
+    for (size_t l=2; l<=L; l++)
+        p[l-1] = p1 * pow(xi/double(B),l-1);
+
+    if ((p1>1.0) and (not allow_probability_redistribution))
     {
         stringstream ss; 
         ss.precision(4);
@@ -244,19 +259,59 @@ vector < set < size_t > * > fast_mhrn_neighbor_set(
         ss << new_k;
 
         ss << "; If you want to keep k = " << k << " change the structural control parameter to xi > " << new_xi;
+
+        ss << " You may also want to allow for redistribution of connection probability to higher layers. To this end, call the function with parameter `allow_probability_redistribution = True`."; 
             
         throw domain_error(ss.str());
     }
+    else if ((p1>1.0) and (allow_probability_redistribution))
+    {
 
-    vector < double > p(L);
-    p[0] = p1;
-    for (size_t l=2; l<=L; l++)
-        p[l-1] = p1 * pow(xi/double(B),l-1);
+        // redistribute non-creatable edges from lower to higher layers
+        
+        // compute number of edges per layer
+        vector < double > m(L);
+        for (size_t l=1; l<=L; l++)
+            m[l-1] = (0.5 * N) * pow(B,l-1.0) * (B-1.0);
+
+        size_t l = 0;
+        double excess_edges = (p[0]-1.0)*m[0];
+
+        while (excess_edges > 0.0)
+        {
+            l++;
+
+            // this one is actuall already covered in assert(k<N-1) but let's keep it here for safety.
+            if (l==L)
+                throw domain_error("There's not enough node pairs to redistribute all excess probability.");
+
+            excess_edges += (p[l]-1.0)*m[l];
+        }
+
+        excess_edges -= (p[l]-1.0)*m[l];
+
+        vector < double > new_p(L);
+
+        for (size_t j=0; j<l; j++)
+            new_p[j] = 1.0;
+
+        // Eq. (B.3) on page 235 of my dissertation
+        new_p[l] = p[l] + (1.0/m[l]) * excess_edges;
+
+        // a safety mechanism
+        if (new_p[l] > 1.0)
+            throw domain_error("There's something wrong with the redistribution algorithm. Please open an issue at https://github.com/benmaier/cMHRN/issues");
+
+        for (size_t j=l+1; j<L; j++)
+            new_p[j] = p[j];
+
+        p = new_p;
+    }
 
     //add ER graphs in lowest layer l=1
     for (size_t start_node = 0; start_node<N; start_node += B)
     {
-        add_random_subgraph(B,p1,G,generator,uni_distribution,start_node);
+        add_random_subgraph(B,p[0],G,generator,uni_distribution,start_node);
     }
 
     for(size_t l=2;l<=L; l++)

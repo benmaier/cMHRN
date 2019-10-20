@@ -20,6 +20,7 @@ tuple < size_t, vector <size_t>, vector<size_t> > fast_mhrn_coord_lists(
         double xi,
         bool use_giant_component = false,
         bool delete_non_giant_component_nodes = true,
+        bool allow_probability_redistribution = false,
         size_t seed = 0
         );
 
@@ -30,6 +31,7 @@ pair < size_t, vector < pair < size_t, size_t > > > fast_mhrn_edge_list(
         double xi,
         bool use_giant_component = false,
         bool delete_non_giant_component_nodes = true,
+        bool allow_probability_redistribution = false,
         size_t seed = 0
         );
 
@@ -39,6 +41,7 @@ vector < set < size_t > * > fast_mhrn_neighbor_set(
         double k,
         double xi,
         bool use_giant_component = false,
+        bool allow_probability_redistribution = false,
         size_t seed = 0
         );
 

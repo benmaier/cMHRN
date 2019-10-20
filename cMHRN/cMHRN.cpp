@@ -40,6 +40,7 @@
 #include "mhrn.h"
 #include "kleinberg.h"
 #include "modified_small_world.h"
+#include "random_geometric_small_world.h"
 #include "original_small_world.h"
 //#include "ResultClasses.h"
 //#include "test.h"
@@ -57,6 +58,7 @@ PYBIND11_MODULE(cMHRN, m) {
             py::arg("xi"),
             py::arg("use_giant_component") = false,
             py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("allow_probability_redistribution") = false,
             py::arg("seed") = 0
             );
 
@@ -67,6 +69,7 @@ PYBIND11_MODULE(cMHRN, m) {
             py::arg("xi"),
             py::arg("use_giant_component") = false,
             py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("allow_probability_redistribution") = false,
             py::arg("seed") = 0
             );
 
@@ -123,6 +126,26 @@ PYBIND11_MODULE(cMHRN, m) {
             py::arg("use_giant_component") = false,
             py::arg("delete_non_giant_component_nodes") = true,
             py::arg("use_fast_algorithm") = true,
+            py::arg("seed") = 0
+            );
+
+    m.def("random_geometric_small_world_network", &random_geometric_small_world_edge_list, 
+            R"pydoc(Returns a variant of the Watts-Strogatz small world network model as a pair of (number_of_nodes, edge_list). In this variant, at p = 1, the generated networks are equal to Erdos-Renyi graphs and at p = 0, they are equal to random geometric graphs of dimension d = 1. The mean degree k can be a float.)pydoc",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("p"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("seed") = 0
+            );
+
+    m.def("random_geometric_small_world_network_coord_lists", &random_geometric_small_world_coord_lists, 
+            R"pydoc(Returns a variant of the Watts-Strogatz small world network model as lists of adjacency matrix coordinates. In this variant, at p = 1, the generated networks are equal to Erdos-Renyi graphs and at p = 0, they are equal to random geometric graphs of dimension d = 1. The mean degree k can be a float.)pydoc",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("p"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
             py::arg("seed") = 0
             );
 
