@@ -30,6 +30,7 @@ ext_modules = [
             'cMHRN/original_small_world.cpp', 
             'cMHRN/modified_small_world.cpp', 
             'cMHRN/random_geometric_small_world.cpp', 
+            'cMHRN/random_geometric_kleinberg.cpp', 
             'cMHRN/cMHRN.cpp', 
         ],
         include_dirs=[

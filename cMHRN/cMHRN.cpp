@@ -40,8 +40,9 @@
 #include "mhrn.h"
 #include "kleinberg.h"
 #include "modified_small_world.h"
-#include "random_geometric_small_world.h"
 #include "original_small_world.h"
+#include "random_geometric_small_world.h"
+#include "random_geometric_kleinberg.h"
 //#include "ResultClasses.h"
 //#include "test.h"
 
@@ -89,6 +90,28 @@ PYBIND11_MODULE(cMHRN, m) {
             py::arg("use_giant_component") = false,
             py::arg("delete_non_giant_component_nodes") = true,
             py::arg("seed") = 0
+            );
+
+    m.def("random_geometric_kleinberg_network", &random_geometric_kleinberg_edge_list, R"pydoc(Returns a 1d Kleinberg network (with periodic boundary conditions) as edge list where node positions are uniformly distributed in the real-valued interval [0,N]. Connection probability of two nodes u and v is ~ d(u,v)^(mu-1) where d(u,v) is the pair's distance in periodic boundary conditions. If you want to map from an MHRN, bear in mind that N=B^L and mu=log(xi)/log(B). DO NOT USE WITH `use_theory_algorithm = True`.)pydoc",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("mu"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("use_theory_algorithm") = false,
+            py::arg("seed") = 0,
+            py::arg("epsilon") = 0.0
+            );
+
+    m.def("random_geometric_kleinberg_network_coord_lists", &random_geometric_kleinberg_coord_lists, R"pydoc(Returns a 1d Kleinberg network (with periodic boundary conditions) as lists of adjacency matrix coordinates, where node positions are uniformly distributed in the real-valued interval [0,N]. Connection probability of two nodes u and v is ~ d(u,v)^(mu-1) where d(u,v) is the pair's distance in periodic boundary conditions. If you want to map from an MHRN, bear in mind that N=B^L and mu=log(xi)/log(B). DO NOT USE WITH `use_theory_algorithm = True`.)pydoc",
+            py::arg("N"),
+            py::arg("k"),
+            py::arg("mu"),
+            py::arg("use_giant_component") = false,
+            py::arg("delete_non_giant_component_nodes") = true,
+            py::arg("use_theory_algorithm") = false,
+            py::arg("seed") = 0,
+            py::arg("epsilon") = 0.0
             );
 
     m.def("original_small_world_network", &original_small_world_edge_list, "Returns a Watts-Strogatz small world network as a pair of (number_of_nodes, edge_list). Note that at p = 1, the generated networks are not equal to Erdos-Renyi graphs. The degree k has to be an even integer.",
